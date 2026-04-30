@@ -6,4 +6,5 @@ ual-Mood "Low" Logic: A custom algorithm that detects a combination of "Sad" and
 
 
 
-How to Run LocallyClone the Repo: git clone [(https://github.com/ANSHPATEL-ap123/AuraSound-V2.0)])Install Dependencies: npm installStart Dev Server: npm run devSync Audio: Tap the "Sync Audio" button and allow camera access.🎓 Academic ContextThis project was developed during my first year of the B.Tech Information Technology program at Guru Gobind Singh Indraprastha University (GGSIPU). It serves as a study in Affective Computing and real-time frontend engineering.TEAM APEX | AURA SERIES V2.0
+How to Run LocallyClone the Repo: git clone (https://github.com/ANSHPATEL-ap123/AuraSound-V2.0)  
+Install Dependencies: npm installStart Dev Server: npm run devSync Audio: Tap the "Sync Audio" button and allow camera access.🎓 Academic ContextThis project was developed during my first year of the B.Tech Information Technology program at Guru Gobind Singh Indraprastha University (GGSIPU). It serves as a study in Affective Computing and real-time frontend engineering.TEAM APEX | AURA SERIES V2.0
