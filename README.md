@@ -1,16 +1,9 @@
-# React + Vite
+🌌 AuraSound V2.0A Mood-Responsive Local Vibe-Sync EngineDeveloped by Ansh Patel (Solo Project)AuraSound V2.0 is an advanced AI-driven multimedia application that synchronizes environmental aesthetics and audio playback with a user’s emotional state. Built as a successor to AuraVision, this project leverages client-side machine learning to bridge the gap between human emotion and digital atmosphere.🚀 Core FeaturesEdge AI Facial Recognition: Uses face-api.js for real-time, on-device emotion detection, ensuring 100% user privacy.Local Vibe-Sync Engine: High-fidelity audio playback synced with CSS-variable-driven animations.The "Dancing Frame": A responsive UI border that pulses and scales in direct synchronization with audio frequency and volume.D
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+ual-Mood "Low" Logic: A custom algorithm that detects a combination of "Sad" and "Neutral" states to trigger a calming devotional playlist.Mobile-First Design: Fully responsive vertical stacking for a premium experience on smartphones.🎵 Mood Matrix & Integrated TracksMoodSoundtrackArtistVisual ExperienceHappySubhanallahPritamGolden Aura / Warm PulseNeutralDil MereThe Local TrainTeal Aura / Steady PulseSadChanna MereyaArijit SinghDeep Blue / Slow WaveAngrySaharaPhonkCrimson / High-Intensity JitterSurprisedShooting StarsBag RaidersSilver / Space Travel ParticlesLowJai Kal MahakalDevotionalSoft White / Breathing Aura
 
-Currently, two official plugins are available:
+🛠️ Technical StackFrontend: React.js (Vite)AI/ML: TensorFlow.js / face-api.jsAudio: Web Audio API (AnalyserNode)Styling: Tailwind CSS & Glassmorphism📖 
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-## React Compiler
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+How to Run LocallyClone the Repo: git clone [(https://github.com/ANSHPATEL-ap123/AuraSound-V2.0)])Install Dependencies: npm installStart Dev Server: npm run devSync Audio: Tap the "Sync Audio" button and allow camera access.🎓 Academic ContextThis project was developed during my first year of the B.Tech Information Technology program at Guru Gobind Singh Indraprastha University (GGSIPU). It serves as a study in Affective Computing and real-time frontend engineering.TEAM APEX | AURA SERIES V2.0
