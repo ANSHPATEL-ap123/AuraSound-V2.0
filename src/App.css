@@ -1,0 +1,569 @@
+/* ============================================================
+   AuraSound v2.0 — App.css
+   Next-Level Vibe-Sync UI Engine
+   "A living organism responding to music and the human face."
+   ============================================================ */
+
+/* ── CSS Custom Properties (mood-reactive) ─────────────────── */
+:root {
+  --mood-color: 20, 184, 166;
+  /* Teal  — Neutral default  */
+  --mood-gold: 251, 191, 36;
+  /* Gold  — Happy            */
+  --mood-blue: 96, 165, 250;
+  /* Blue  — Sad              */
+  --mood-crimson: 239, 68, 68;
+  /* Crimson — Angry          */
+  --mood-indigo: 129, 140, 248;
+  /* Indigo — Low             */
+  /* Surprised: Bright Silver + Electric Blue */
+  --mood-silver: 180, 210, 255;
+  /* Electric Blue-Silver     */
+  --vol: 0;
+  /* 0-1, set via JS inline style */
+  --particle-boost: 1;
+  /* 1 = normal, 2.5 = surprised boost */
+}
+
+/* ── Base overrides ────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   DYNAMIC BACKGROUND
+   Radial gradient that breathes with --mood-color.
+   The inner glow expands on bass hits via JS inline --vol.
+   ═══════════════════════════════════════════════════════════ */
+.aura-app-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 40%,
+      rgba(var(--mood-color), 0.12) 0%,
+      rgba(var(--mood-color), 0.04) 40%,
+      transparent 70%),
+    radial-gradient(ellipse 120% 100% at 50% 100%,
+      rgba(var(--mood-color), 0.06) 0%,
+      transparent 60%),
+    #050505;
+  transition:
+    background 2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Beat-reactive inner glow overlay (driven by --vol in inline style) */
+.aura-app-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 50% 45% at 50% 38%,
+      rgba(var(--mood-color), calc(var(--vol) * 0.18)) 0%,
+      transparent 65%);
+  transition: background 0.12s ease-out;
+}
+
+/* ── Noise texture overlay ─────────────────────────────────── */
+.aura-app-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PARTICLE FIELD
+   Pure CSS — 12 particles, staggered delays.
+   Speed and opacity scale with volumeLevel via CSS var --vol.
+   ═══════════════════════════════════════════════════════════ */
+.particle-field {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(var(--mood-color), 0.6);
+  box-shadow: 0 0 6px 2px rgba(var(--mood-color), 0.3);
+  animation: particle-float linear infinite;
+  /* base duration is overridden per-particle below */
+  transition: background 2s ease, box-shadow 2s ease;
+}
+
+@keyframes particle-float {
+  0% {
+    transform: translateY(100vh) scale(0.4);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: calc(0.3 + var(--vol) * 0.6);
+  }
+
+  90% {
+    opacity: calc(0.2 + var(--vol) * 0.5);
+  }
+
+  100% {
+    transform: translateY(-10vh) scale(1.1);
+    opacity: 0;
+  }
+}
+
+/* 12 individual particles — varied size, position, speed */
+/* Base speed driven by --vol. Surprised mode adds --particle-boost (2.5×) via JS class */
+.p1 {
+  width: 3px;
+  height: 3px;
+  left: 5%;
+  animation-duration: calc((8s - var(--vol) * 3s) / var(--particle-boost));
+  animation-delay: -1s;
+}
+
+.p2 {
+  width: 2px;
+  height: 2px;
+  left: 12%;
+  animation-duration: calc((11s - var(--vol) * 4s) / var(--particle-boost));
+  animation-delay: -4s;
+}
+
+.p3 {
+  width: 4px;
+  height: 4px;
+  left: 22%;
+  animation-duration: calc((7s - var(--vol) * 2s) / var(--particle-boost));
+  animation-delay: -2s;
+}
+
+.p4 {
+  width: 2px;
+  height: 2px;
+  left: 35%;
+  animation-duration: calc((13s - var(--vol) * 5s) / var(--particle-boost));
+  animation-delay: -7s;
+}
+
+.p5 {
+  width: 3px;
+  height: 3px;
+  left: 48%;
+  animation-duration: calc((9s - var(--vol) * 3s) / var(--particle-boost));
+  animation-delay: -0.5s;
+}
+
+.p6 {
+  width: 2px;
+  height: 2px;
+  left: 58%;
+  animation-duration: calc((10s - var(--vol) * 4s) / var(--particle-boost));
+  animation-delay: -3s;
+}
+
+.p7 {
+  width: 5px;
+  height: 5px;
+  left: 65%;
+  animation-duration: calc((6s - var(--vol) * 2s) / var(--particle-boost));
+  animation-delay: -5s;
+}
+
+.p8 {
+  width: 2px;
+  height: 2px;
+  left: 74%;
+  animation-duration: calc((12s - var(--vol) * 4s) / var(--particle-boost));
+  animation-delay: -8s;
+}
+
+.p9 {
+  width: 3px;
+  height: 3px;
+  left: 83%;
+  animation-duration: calc((8s - var(--vol) * 3s) / var(--particle-boost));
+  animation-delay: -1.5s;
+}
+
+.p10 {
+  width: 2px;
+  height: 2px;
+  left: 90%;
+  animation-duration: calc((14s - var(--vol) * 5s) / var(--particle-boost));
+  animation-delay: -6s;
+}
+
+.p11 {
+  width: 4px;
+  height: 4px;
+  left: 28%;
+  animation-duration: calc((7s - var(--vol) * 2s) / var(--particle-boost));
+  animation-delay: -3.5s;
+}
+
+.p12 {
+  width: 2px;
+  height: 2px;
+  left: 70%;
+  animation-duration: calc((10s - var(--vol) * 3s) / var(--particle-boost));
+  animation-delay: -9s;
+}
+
+/* ── Surprised mood: Silver + Electric Blue glow + 2.5× particle warp speed ── */
+/* Applied via JS: document.documentElement.style.setProperty('--particle-boost', '2.5') */
+/* Particle field inherits the electric-silver --mood-color automatically              */
+.particle-field.mood-surprised .particle {
+  box-shadow: 0 0 10px 3px rgba(180, 210, 255, 0.6), 0 0 20px rgba(100, 160, 255, 0.3);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ROOT APP SHELL
+   ═══════════════════════════════════════════════════════════ */
+#root {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   VIBE CODING — GPU-accelerated reactive transforms
+   ═══════════════════════════════════════════════════════════ */
+.vibe-orb,
+.glassmorphism-card {
+  will-change: transform, filter, box-shadow, border-color;
+  transition:
+    transform 0.12s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    filter 0.12s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    box-shadow 0.12s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    border-color 0.12s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PORTAL RINGS — counter-rotating at different speeds
+   Creates a hypnotic vortex around the camera lens.
+   ═══════════════════════════════════════════════════════════ */
+@keyframes portal-cw {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes portal-ccw {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+/* Ring 1 — slow clockwise, dashed */
+.aura-ring {
+  animation: portal-cw 12s linear infinite;
+  will-change: transform;
+}
+
+/* Ring 2 — slower counter-clockwise, dotted */
+.aura-ring-rev {
+  animation: portal-ccw 20s linear infinite;
+  will-change: transform;
+}
+
+/* Ring 3 — medium speed clockwise, solid thin */
+.aura-ring-3 {
+  animation: portal-cw 7s linear infinite;
+  will-change: transform;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   VISUALIZER BARS — 8-bar equalizer inside Now Playing card
+   scaleY driven by JS inline style per-bar
+   ═══════════════════════════════════════════════════════════ */
+.visualizer-container {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 40px;
+  padding: 4px 0;
+}
+
+.viz-bar {
+  flex: 1;
+  border-radius: 3px 3px 1px 1px;
+  background: rgba(var(--mood-color), 0.75);
+  box-shadow: 0 0 6px rgba(var(--mood-color), 0.4);
+  transform-origin: bottom center;
+  will-change: transform;
+  transition:
+    transform 0.08s ease-out,
+    background 2s ease,
+    box-shadow 2s ease;
+  min-height: 3px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   EQUALIZER BARS (legacy mini-bar row, kept for compatibility)
+   ═══════════════════════════════════════════════════════════ */
+.eq-bar {
+  will-change: height, opacity;
+  transition: height 0.08s ease-out;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SCAN LINE
+   ═══════════════════════════════════════════════════════════ */
+@keyframes scan-v {
+  0% {
+    top: -2px;
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  80% {
+    opacity: 1;
+  }
+
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+.scan-line {
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  animation: scan-v 3s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   FLOATING BADGE
+   ═══════════════════════════════════════════════════════════ */
+@keyframes badge-float {
+
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+
+  33% {
+    transform: translateY(-5px) rotate(4deg);
+  }
+
+  66% {
+    transform: translateY(-2px) rotate(-3deg);
+  }
+}
+
+.mood-badge {
+  animation: badge-float 3.5s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PLAYING DOT PULSE
+   ═══════════════════════════════════════════════════════════ */
+@keyframes playing-pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.playing-dot {
+  animation: playing-pulse 1s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BAR SHIMMER
+   ═══════════════════════════════════════════════════════════ */
+@keyframes bar-shimmer-anim {
+  0% {
+    left: -64px;
+  }
+
+  100% {
+    left: 100%;
+  }
+}
+
+.bar-shimmer {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 64px;
+  animation: bar-shimmer-anim 1.8s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   GLASSMORPHISM CARD
+   ═══════════════════════════════════════════════════════════ */
+.glassmorphism-card {
+  background: rgba(255, 255, 255, 0.025);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SYNC BUTTON
+   ═══════════════════════════════════════════════════════════ */
+.sync-btn {
+  cursor: pointer;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sync-btn:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.sync-btn:active {
+  transform: scale(0.95);
+}
+
+/* ── vibe-orb will-change hint ─────────────────────────────── */
+.vibe-orb {
+  will-change: transform, filter;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MOBILE RESPONSIVE OVERHAUL
+   @media (max-width: 768px) — Vertical stack, compact layout
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  /* ── Root shell: remove side padding, allow full width ── */
+  #root {
+    max-width: 100%;
+    padding: 1rem 0.75rem;
+    justify-content: flex-start;
+    padding-top: 2rem;
+  }
+
+  /* ── Main title: compact font size ── */
+  .aura-title {
+    font-size: 2.4rem !important;
+    letter-spacing: -0.04em !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  /* ── Scanner container: full-width column stack ── */
+  .aura-scanner-container {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 0;
+  }
+
+  /* ── Camera / orb: scale to 92vw so it never clips ── */
+  .vibe-orb {
+    width: 92vw !important;
+    max-width: 340px;
+  }
+
+  .vibe-orb .rounded-full.overflow-hidden {
+    width: 92vw !important;
+    height: 92vw !important;
+    max-width: 340px;
+    max-height: 340px;
+  }
+
+  /* Tailwind w-72/w-80 override for the lens div */
+  .vibe-orb>div.relative {
+    width: min(92vw, 340px);
+    height: min(92vw, 340px);
+  }
+
+  /* ── Now Playing card: compact padding, full width ── */
+  .glassmorphism-card {
+    padding: 16px;
+    border-radius: 14px;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* ── Visualizer bars: clamp height, prevent overflow ── */
+  .visualizer-container {
+    height: 32px;
+    gap: 3px;
+    overflow: hidden;
+  }
+
+  .viz-bar {
+    height: 28px !important;
+    min-width: 0;
+  }
+
+  /* ── Now Playing row: tighter gap ── */
+  .now-playing-row {
+    gap: 10px;
+  }
+
+  /* ── Card heading sizes ── */
+  .card-mood-label {
+    font-size: 1.25rem !important;
+    letter-spacing: 0.08em !important;
+  }
+
+  /* ── Reduce top margin on card ── */
+  .mt-14 {
+    margin-top: 2.5rem !important;
+  }
+
+  /* ── Footer: smaller tracking ── */
+  .aura-footer {
+    font-size: 8px !important;
+    letter-spacing: 0.25em !important;
+    margin-top: 1.5rem !important;
+  }
+}
+
+/* Very small phones (< 400px) */
+@media (max-width: 400px) {
+  .vibe-orb>div.relative {
+    width: 88vw;
+    height: 88vw;
+  }
+
+  .glassmorphism-card {
+    padding: 12px;
+  }
+
+  .visualizer-container {
+    height: 26px;
+  }
+}
