@@ -3,29 +3,30 @@ import { MOOD_PLAYLISTS } from '../constants/MusicLibrary';
 
 /**
  * ═══════════════════════════════════════════════════════════════════
- *  AuraSound Audio Engine  v7.0 — EMERGENCY LAUNCH VERSION
+ *  AuraSound Audio Engine  v8.0 — FINAL STABLE VERSION
  * ═══════════════════════════════════════════════════════════════════
  */
 
-const FADE_MS     = 1000;
-const MAX_VOL     = 0.72;
-const DEBOUNCE_MS = 1000; // Increased for deployment stability
+const FADE_MS = 1000;
+const MAX_VOL = 0.72;
+const DEBOUNCE_MS = 1000;
 
 export const useAuraSound = (mood) => {
     const [currentTrack, setCurrentTrack] = useState(null);
-    const [isPlaying,    setIsPlaying]    = useState(false);
-    const [volumeLevel,  setVolumeLevel]  = useState(0);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [volumeLevel, setVolumeLevel] = useState(0);
 
-    const ctxRef         = useRef(null);
-    const analyserRef    = useRef(null);
-    const gainRef        = useRef(null);
-    const audioElRef     = useRef(null);
-    const activeUrlRef   = useRef(null);
-    const unlockedRef    = useRef(false);
-    const moodRef        = useRef(mood);
-    const prevMoodRef    = useRef(null);
+    const ctxRef = useRef(null);
+    const analyserRef = useRef(null);
+    const gainRef = useRef(null);
+    const audioElRef = useRef(null);
+    const activeUrlRef = useRef(null);
+    const unlockedRef = useRef(false);
+    const moodRef = useRef(mood);
+    const prevMoodRef = useRef(null);
     const debounceTimerRef = useRef(null);
     const isTransitioningRef = useRef(false);
+    const rafRef = useRef(null);
 
     useEffect(() => { moodRef.current = mood; }, [mood]);
 
@@ -33,6 +34,7 @@ export const useAuraSound = (mood) => {
         if (ctxRef.current) return ctxRef.current;
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         const analyser = ctx.createAnalyser();
+        analyser.fftSize = 256;
         const gain = ctx.createGain();
         gain.gain.value = MAX_VOL;
         analyser.connect(gain);
@@ -41,6 +43,25 @@ export const useAuraSound = (mood) => {
         analyserRef.current = analyser;
         gainRef.current = gain;
         return ctx;
+    }, []);
+
+    // ── Visualizer Loop ──
+    const startAnalyser = useCallback(() => {
+        const tick = () => {
+            if (!analyserRef.current) return;
+            const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
+            analyserRef.current.getByteFrequencyData(dataArray);
+
+            let sum = 0;
+            // Average the bass bins for the most "rhythmic" movement
+            for (let i = 0; i < 10; i++) sum += dataArray[i];
+            const newVolume = (sum / 10) / 255;
+
+            setVolumeLevel(newVolume);
+            rafRef.current = requestAnimationFrame(tick);
+        };
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = requestAnimationFrame(tick);
     }, []);
 
     const fadeTo = (targetVol, durationMs, onDone) => {
@@ -71,14 +92,15 @@ export const useAuraSound = (mood) => {
             source.connect(analyserRef.current);
 
             gainRef.current.gain.setValueAtTime(0, ctx.currentTime);
-            
+
             audio.play()
                 .then(() => {
                     activeUrlRef.current = track.url;
                     setCurrentTrack({ title: track.title, artist: track.artist });
                     setIsPlaying(true);
+                    startAnalyser(); // Start the beat bars!
                     fadeTo(MAX_VOL, FADE_MS, () => {
-                        isTransitioningRef.current = false; // UNLOCK
+                        isTransitioningRef.current = false;
                     });
                 })
                 .catch(() => {
@@ -108,7 +130,7 @@ export const useAuraSound = (mood) => {
 
         clearTimeout(debounceTimerRef.current);
         debounceTimerRef.current = setTimeout(() => {
-            isTransitioningRef.current = true; // LOCK
+            isTransitioningRef.current = true;
             prevMoodRef.current = mood;
             const playlist = MOOD_PLAYLISTS[mood];
             if (playlist && playlist[0]) loadAndPlay(playlist[0]);
@@ -116,6 +138,11 @@ export const useAuraSound = (mood) => {
 
         return () => clearTimeout(debounceTimerRef.current);
     }, [mood]);
+
+    // Cleanup RAF on unmount
+    useEffect(() => {
+        return () => cancelAnimationFrame(rafRef.current);
+    }, []);
 
     return { unlockAudio, isPlaying, currentTrack, volumeLevel };
 };
