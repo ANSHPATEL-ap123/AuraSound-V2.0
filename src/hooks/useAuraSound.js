@@ -3,7 +3,7 @@ import { MOOD_PLAYLISTS } from '../constants/MusicLibrary';
 
 /**
  * ═══════════════════════════════════════════════════════════════════
- *  AuraSound Audio Engine  v8.0 — FINAL STABLE VERSION
+ *  AuraSound Audio Engine  v9.0 — FINAL PRODUCTION STABLE
  * ═══════════════════════════════════════════════════════════════════
  */
 
@@ -28,6 +28,7 @@ export const useAuraSound = (mood) => {
     const isTransitioningRef = useRef(false);
     const rafRef = useRef(null);
 
+    // Keep the mood Ref updated in real-time
     useEffect(() => { moodRef.current = mood; }, [mood]);
 
     const buildCtx = useCallback(() => {
@@ -45,18 +46,14 @@ export const useAuraSound = (mood) => {
         return ctx;
     }, []);
 
-    // ── Visualizer Loop ──
     const startAnalyser = useCallback(() => {
         const tick = () => {
             if (!analyserRef.current) return;
             const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
             analyserRef.current.getByteFrequencyData(dataArray);
-
             let sum = 0;
-            // Average the bass bins for the most "rhythmic" movement
             for (let i = 0; i < 10; i++) sum += dataArray[i];
             const newVolume = (sum / 10) / 255;
-
             setVolumeLevel(newVolume);
             rafRef.current = requestAnimationFrame(tick);
         };
@@ -73,11 +70,16 @@ export const useAuraSound = (mood) => {
         setTimeout(() => onDone?.(), durationMs + 50);
     };
 
-    const loadAndPlay = (track) => {
+    const loadAndPlay = (initialTrack) => {
         const ctx = buildCtx();
         if (ctx.state === 'suspended') ctx.resume();
 
         const doSwitch = () => {
+            // SYNC-LOCK: Always grab the absolute LATEST mood before loading the file
+            const actualMood = moodRef.current || 'neutral';
+            const playlist = MOOD_PLAYLISTS[actualMood];
+            const track = playlist ? playlist[0] : initialTrack;
+
             if (audioElRef.current) {
                 audioElRef.current.pause();
                 audioElRef.current.src = '';
@@ -98,7 +100,7 @@ export const useAuraSound = (mood) => {
                     activeUrlRef.current = track.url;
                     setCurrentTrack({ title: track.title, artist: track.artist });
                     setIsPlaying(true);
-                    startAnalyser(); // Start the beat bars!
+                    startAnalyser();
                     fadeTo(MAX_VOL, FADE_MS, () => {
                         isTransitioningRef.current = false;
                     });
@@ -139,7 +141,6 @@ export const useAuraSound = (mood) => {
         return () => clearTimeout(debounceTimerRef.current);
     }, [mood]);
 
-    // Cleanup RAF on unmount
     useEffect(() => {
         return () => cancelAnimationFrame(rafRef.current);
     }, []);
